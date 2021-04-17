@@ -183,8 +183,21 @@ Zotero.Scihub = {
 						if (item.isRegularItem() && !item.isCollection()) {
 							try {
 								// Extract direct pdf url from scihub webpage.
-								pdf_url = req.responseXML.querySelector("iframe#pdf").src
-								Zotero.debug('Got pdf_url from embedding page: '+pdf_url);
+								// try ye olde way just for debugging's sake
+								try { 
+									Zotero.debug("would have gotten pdf url with ye olde way " + req.responseXML.querySelector("iframe#pdf").src );
+
+								} catch(e) {
+									Zotero.debug("error trying ye olde way "+ e)
+								}
+
+								var html_text = req.responseText
+								html_text = html_text.replace(/\s/g, "")
+								var split_html = html_text.split('<iframe src="');
+								if (split_html.length == 1) {
+									split_html = html_text.split('<iframesrc="')
+								}
+								pdf_url = split_html[1].split('"')[0]
 								pdf_url = Zotero.Scihub.fixPdfUrl(pdf_url);
 								Zotero.debug('After fixPdfUrl, getting pdf_url: '+ pdf_url);
 
